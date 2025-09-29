@@ -68,8 +68,8 @@ class Client(discord.Client):
                 await message.reply(chunk)
 
         if (
-            message.channel.category.name == "info" or
-            message.channel.category.name == "resources"
+            message.channel.category
+            and message.channel.category.name in ["info", "resources"]
         ):
             content = message.content
             await message.delete()

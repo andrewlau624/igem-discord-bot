@@ -1,9 +1,11 @@
 import discord
 from dotenv import load_dotenv
 import os
+
+from flask import Flask
 from groq import Groq
 
-import webserver
+from threading import Thread
 
 load_dotenv()
 
@@ -80,7 +82,22 @@ intents.message_content = True
 
 client = Client(intents=intents)
 
-token = os.getenv('DISCORD_TOKEN')
-client.run(token=token)
+app = Flask(__name__)
 
-webserver.keep_alive()
+@app.route('/')
+def home():
+    return "Discord bot ok"
+
+def run_web():
+    port = int(os.environ.get("PORT", 8080))  # use Render's PORT
+    app.run(host="0.0.0.0", port=port)
+
+def keep_alive():
+    t = Thread(target=run_web)
+    t.daemon = True
+    t.start()
+
+if __name__ == "__main__":
+    keep_alive()
+    token = os.getenv("DISCORD_TOKEN")
+    client.run(token)

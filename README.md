@@ -1,6 +1,7 @@
 # Stanford iGEM Discord Bot
 
 A open source **Discord bot** for the Stanford iGEM team that answers **Synthetic Biology questions** using the Groq API and manages server channels.  
+
 Built with **discord.py**, **Flask**, and **Groq LLMs**.  
 
 ---

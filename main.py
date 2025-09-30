@@ -1,6 +1,7 @@
 import discord
 from dotenv import load_dotenv
 import os
+import time
 
 from flask import Flask
 from groq import Groq
@@ -57,12 +58,27 @@ def split_messages(message, limit=2000):
     return chunks
 
 class Client(discord.Client):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user_cooldowns = {}
+
     async def on_ready(self):
         print(f'Logged on as {self.user}!')
 
     async def on_message(self, message):
         if message.author == self.user:
             return
+
+        now = time.time()
+        cooldown_period = 10
+        last_used = self.user_cooldowns.get(message.author.id, 0)
+
+        if now - last_used < cooldown_period:
+            remaining = int(cooldown_period - (now - last_used))
+            await message.reply(f"⏳ Slow down! Try again in {remaining}s.", mention_author=False)
+            return
+
+        self.user_cooldowns[message.author.id] = now
 
         if (
             message.author != self.user

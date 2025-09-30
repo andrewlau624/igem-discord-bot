@@ -71,7 +71,7 @@ class Client(discord.Client):
         ):
             response = query_llm(message=message.content)
             for chunk in split_messages(response):
-                await message.reply(chunk, mention_author=False)
+                await message.reply(chunk)
 
         if (
             message.channel.category

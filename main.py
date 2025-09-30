@@ -64,10 +64,14 @@ class Client(discord.Client):
         if message.author == self.user:
             return
 
-        if self.user in message.mentions and (message.channel.name == "igem-bot" or message.channel.name == "moderation"):
+        if (
+            message.author != self.user
+            and self.user in message.mentions
+            and message.channel.name in ["igem-bot", "moderation"]
+        ):
             response = query_llm(message=message.content)
             for chunk in split_messages(response):
-                await message.reply(chunk)
+                await message.reply(chunk, mention_author=False)
 
         if (
             message.channel.category

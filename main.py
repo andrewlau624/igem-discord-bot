@@ -69,22 +69,22 @@ class Client(discord.Client):
         if message.author == self.user:
             return
 
-        now = time.time()
-        cooldown_period = 10
-        last_used = self.user_cooldowns.get(message.author.id, 0)
-
-        if now - last_used < cooldown_period:
-            remaining = int(cooldown_period - (now - last_used))
-            await message.reply(f"⏳ Slow down! Try again in {remaining}s.", mention_author=False)
-            return
-
-        self.user_cooldowns[message.author.id] = now
-
         if (
             message.author != self.user
             and self.user in message.mentions
             and message.channel.name in ["igem-bot", "moderation"]
         ):
+            now = time.time()
+            cooldown_period = 10
+            last_used = self.user_cooldowns.get(message.author.id, 0)
+
+            if now - last_used < cooldown_period:
+                remaining = int(cooldown_period - (now - last_used))
+                await message.reply(f"⏳ Slow down! Try again in {remaining}s.", mention_author=False)
+                return
+
+            self.user_cooldowns[message.author.id] = now
+
             response = query_llm(message=message.content)
             for chunk in split_messages(response):
                 await message.reply(chunk)
